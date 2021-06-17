@@ -1,31 +1,27 @@
 package com.example.bloodbank.controller;
 
 import com.example.bloodbank.BloodBank;
-import com.example.bloodbank.BloodBankRepository;
-import com.example.bloodbank.exception.ResourceNotFoundException;
-import com.example.bloodbank.exception.ValueMissingException;
+import com.example.bloodbank.service.BloodBankService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/bloodbank")
 public class BloodBankController {
-    private BloodBankRepository bloodBankRepository;
 
-    public BloodBankController(BloodBankRepository bloodBankRepository) {
-        this.bloodBankRepository = bloodBankRepository;
+    private BloodBankService  bloodBankService;
+
+    public BloodBankController(BloodBankService bloodBankService) {
+        this.bloodBankService=bloodBankService;
     }
 
-    @GetMapping()
-    public List<BloodBank> getBloodBank() {
-        List<BloodBank> bloodBanks = new ArrayList<>();
-        for (BloodBank bloodbank : bloodBankRepository.findAll()) {
-            bloodBanks.add(bloodbank);
-        }
 
-        return bloodBanks;
+
+    @GetMapping()
+    public List<BloodBank> getBloodBankOfController() {
+        List<BloodBank> bloodBankOfService = bloodBankService.getBloodBankOfService();
+        return bloodBankOfService;
     }
 
     /* @GetMapping("/{address}/{bloodGroup}")
@@ -38,44 +34,28 @@ public class BloodBankController {
     @GetMapping("/{address}/{bloodGroup}")
     public List<BloodBank> getBlooodBankInformation(@PathVariable("address") String address
             , @PathVariable("bloodGroup") String bloodGroup) {
-        List<BloodBank> allByAddressAndBloodGroup = bloodBankRepository.findAllByAddressAndBloodGroup(address, bloodGroup);
-        if (allByAddressAndBloodGroup.isEmpty()) {
-            throw new ResourceNotFoundException("no available bloodgroop");
-        }
-        return allByAddressAndBloodGroup;
+        List<BloodBank> allByAddressAndBloodGroupOfService = bloodBankService.findAllByAddressAndBloodGroupOfService(address, bloodGroup);
+        return allByAddressAndBloodGroupOfService;
     }
 
 
     @PostMapping()
     public void addBloodBank(@RequestBody BloodBank bloodbank) {
-        validation(bloodbank);
-        bloodBankRepository.save(bloodbank);
+        bloodBankService.add(bloodbank);
     }
 
-    private void validation(BloodBank bloodbank) {
-        if (bloodbank.getName().equals("")) {
-            throw new ValueMissingException("Name is missing ");
-        }
-        if (bloodbank.getBloodGroup().equals("")) {
-            throw new ValueMissingException("BLOOD GROUP IS MISSING ");
-        }
-        if (!bloodbank.getBloodGroup().equalsIgnoreCase("A positive") && !bloodbank.getBloodGroup().equalsIgnoreCase("A negative")
-                && !bloodbank.getBloodGroup().equalsIgnoreCase("B positive") &&  !bloodbank.getBloodGroup().equalsIgnoreCase(" B negative")
-                &&   !bloodbank.getBloodGroup().equalsIgnoreCase(" O negative") &&   !bloodbank.getBloodGroup().equalsIgnoreCase(" O positive")
-                &&   !bloodbank.getBloodGroup().equalsIgnoreCase(" AB negative") &&   !bloodbank.getBloodGroup().equalsIgnoreCase(" AB positive"))
-        {
-            throw new ValueMissingException("BLOOD GROUP IS WRONG ");
-        }
-    }
+
 
     @PutMapping()
     public void updateBloodBank(@RequestBody BloodBank bloodbank) {
-        bloodBankRepository.save(bloodbank);
+        bloodBankService.update(bloodbank);
+
     }
 
     @DeleteMapping()
     public void deleteBloodBank(@RequestBody BloodBank bloodbank) {
-        bloodBankRepository.delete(bloodbank);
+        bloodBankService.delete(bloodbank);
+
     }
 }
 

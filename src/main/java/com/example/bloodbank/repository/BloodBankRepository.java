@@ -1,5 +1,6 @@
-package com.example.bloodbank;
+package com.example.bloodbank.repository;
 
+import com.example.bloodbank.BloodBank;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
